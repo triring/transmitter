@@ -1,2 +1,377 @@
-# transmitter
-Raspberry Pi Pico から微弱電波を送出するプログラムです。   [Tinygo](https://tinygo.org)で、Raspberry Pi Pico のPWMを制御し、AMやFMラジオで受信できる微弱電波を生成します。 これで、音楽等を放送することが可能です。   これは、以前、作成した[tinygo_tx](https://github.com/triring/tinygo_tx) を改良したものです。
+# transmitter 　
+
+Raspberry Pi Pico から微弱電波を送出するプログラムです。  
+[Tinygo](https://tinygo.org)で、Raspberry Pi Pico のPWMを制御し、AMやFMラジオで受信できる微弱電波を生成します。
+これで、音楽等を放送することが可能です。  
+これは、以前、作成した[tinygo_tx](https://github.com/triring/tinygo_tx) を改良したものです。
+[tinygo_tx](https://github.com/triring/tinygo_tx) では、電波を送出するPWMの制御部と音楽等を生成するコードが一体となっていて、拡張性がありませんでした。
+そこで、電波を送出するPWMの制御部を独立したデバイスとしてパッケージにまとめ,汎用性を高めました。  
+10cm程度のジャンパー線があればOK、ハードの改造は不要です。  
+
+![DSCN9437_800x600.jpg](photo/DSCN9437_800x600.jpg "DSCN9437_800x600.jpg")
+
+写真は、Raspberry Pi Pico と同じRP2040チップを搭載したマイコンボード[RP2040-Zero](https://www.waveshare.com/wiki/RP2040-Zero)で作られたマイクロパッド[zero-kb02](https://github.com/sago35/tinygo_keeb_workshop_2024/blob/main/buildguide.md)
+です。機能的には互換品なのでデモ用として使用しました。
+
+## DEMO
+
+以下は、[tinygo_tx](https://github.com/triring/tinygo_tx) でRP2040で999KHzの電波を送信し、AMラジオで受信しているデモです。  
+基本機能は、変わっていないので、再掲します。
+
+[![デモ動画](./photo/movie_thumbnail.jpg)](https://youtu.be/EvfH8MqYdDI)  
+
+[RP2040RadioStation:Tinygo+RP2040で，AMラジオを鳴らす](https://youtu.be/EvfH8MqYdDI)
+
+## Features
+
+*transmitter* は、PWMで中波帯から超短波帯の微弱電波を生成し、送信します。  
+ハードの改造は不要です。PWM出力が可能なGPIO端子に、数十センチ程度の導電線を接続するだけで、AM/FMラジオから音楽や効果音が流れます。  
+
+
+## Requirement
+
+### Software
+
+* [Tinygo 開発環境](https://tinygo.org/getting-started/install/)
+
+### Hardware
+
+* Raspberry Pi Pico、または、RP2040を搭載した互換品のマイコンボード
+* 数十センチ程度の導電線(ジャンパーケーブル等)
+* 以下の周波数帯を受信可能なラジオ  
+        - 中波放送(AMラジオ放送)のAM波(526.5～1606.5kHz)を受信できるもの  
+        - 超短波放送(FMラジオ放送)のFM波(76.0～108.0MHz)を受信できるもの  
+
+## Installation
+
+*transmitter* は、tinygoに付属する標準ライブラリのpwm出力の制御機能しか使っていません。  
+tinygoの開発環境がきちんと構築されていれば、特に用意するものはありません。  
+まだ、tinygoをインストールしていない場合は、以下のガイドを読んで開発環境を構築してください。  
+
+[Tinygo Quick install guide](https://tinygo.org/getting-started/install/)
+
+以下のコマンドで、必要なファイル一式をローカルディレクトリにコピーして下さい。  
+
+```bash
+        git clone https://github.com/triring/transmitter
+        cd transmitter
+```
+## Usage
+
+最初に、事前にコンパイルしたバイナリーでラジオを鳴らす方法を解説します。  
+
+1. Raspberry Pi Picoの20Pin(GPIO15)に、長さ数十センチ程度のジャンパーケーブルを接続してください。
+
+![PICO-GP15](images/pico-pinout_GP15.png "PICO-GP15")
+
+![antenna](photo/DSCN9444_800x600.jpg "antenna")
+
+写真はRP2040チップを搭載したマイコンボード[RP2040-Zero](https://www.waveshare.com/wiki/RP2040-Zero)で作られたマイクロパッド[zero-kb02](https://github.com/sago35/tinygo_keeb_workshop_2024/blob/main/buildguide.md)の拡張ポートのGPIO15に差し込まれたアンテナ用のジャンパーワイヤー  
+
+3. ./uf2/demoディレクトリ内にある 任意のuf2ファイルをRaspberry Pi Picoに書き込んで下さい。  
+
+* RadioPicoAM.uf2 は、AMラジオ用です。AM 999KHzで受信できます。  
+* RadioPicoFM.uf2 は、FMラジオ用です。FM 76.0, 78.0, 80.0, 82.0, 84.5, 86.0, 90.1, 92.0, 94.0 MHzで受信できます。  
+
+```bash
+        > tree -a -f demo/
+        demo
+        +---demo/RadioPicoAM
+        │   +--- demo/RadioPicoAM/RadioPicoAM.uf2
+        │   +--- demo/RadioPicoAM/main.go
+        +---demo/RadioPicoFM
+        +--- demo/RadioPicoFM/RadioPicoFM.uf2
+        +--- demo/RadioPicoFM/main.go
+
+```
+
+3. ラジオの電源を入れ、書き込んだuf2ファイル名の周波数に合わせてください。    
+ラジオから、音楽が聞こえるはずです。  
+
+![ラジオ 999KHz](photo/DSCN9441_radio999.jpg "ラジオ 999KHz")  
+
+
+
+## Compile
+
+今回のプログラムは、Raspberry Pi Picoの20Pin(GPIO15)をアンテナ出力に設定することを前提として、AM帯やFM帯の周波数を生成する設定になっています。  
+これ以外のGPIOや他の周波数を使用する場合は、設定を書き換える必要があります。  
+examplesディレクトリにサンプルプログラムがあります。
+その中のそれぞれのディレクトリにあるmain.goファイルを開いて、設定を書き換えて下さい。
+
+```bash
+$ tree -a -f examples/
+examples
++--- examples/NeeNaw	// 海外の緊急車両のサイレン音
+|    +--- examples/NeeNaw/main.go
+|
++--- examples/Simple	// 中央ラ音  440Hz
+     +--- examples/Simple/main.go
+```
+
+<!--
+$ tree -a -f examples/
+examples
++--- examples/EffectTest
+|    +--- examples/EffectTest/main.go
+|
++--- examples/NeeNaw	// 海外の緊急車両のサイレン音
+|    +--- examples/NeeNaw/main.go
+|
++--- examples/Simple	// 中央ラ音  440Hz
+|    +--- examples/Simple/main.go
+|
++--- examples/effect
+|    +--- examples/effect/main.go
+|
++--- examples/jukebox
+|    +--- examples/jukebox/main.go
+|
++--- examples/songs
+    +--- examples/songs/main.go
+-->
+### 書き換えるファイルと変更するパラメータ   
+
+設定を変更するmain.goファイルを開き、GPIOや周波数の設定を変更して下さい。  
+
+#### GPIO端子の設定
+
+1. 変更場所  
+デバイスの初期化を行っているfunc main()の先頭部分のinitTransmitter()メソッドを探して下さい。  
+
+```go
+	// 出力アンテナに設定するGPIOピンに対応するpwmのチャンネルを取得する。
+	pwm := pinToPWM[machine.GPIO15]
+	// 微弱電波を出力するGPIOピンを指定して、送信機を設定する。
+	tx, err := initTransmitter(pwm, machine.GPIO15)
+	if err != nil {
+		fmt.Printf("failed to configure PWM\r\n")
+		return
+	}
+```
+
+2. 変更内容  
+
+initTransmitter()は、引数として、アンテナ出力に設定するPinと、そのPinに割り当てられているpwnのチャンネル番号が必要です。  
+Raspberry Pi Picoのpwnのチャンネルは、以下の表のように割り当てられています。  
+
+| GPIO  | 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 | 11 | 12 | 13 | 14 | 15 |
+| :---- | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: |
+| PWM Ch| 0A | 0B | 1A | 1B | 2A | 2B | 3A | 3B | 4A | 4B | 5A | 5B | 6A | 6B | 7A | 7B |
+
+| GPIO  | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 |    |    |
+| :---- | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: |
+| PWM Ch| 0A | 0B | 1A | 1B | 2A | 2B | 3A | 3B | 4A | 4B | 5A | 5B | 6A | 6B |    |    |
+
+この対応については、Raspberry Pi Pico用に事前に定義してあるので、
+Raspberry Pi Picoを使用するのであれば、以下のコードで、割り当てられているpwnのチャンネル番号を取得することができます。  
+```go
+	pwm := pinToPWM[machine.GPIO15]
+```
+Raspberry Pi Pico以外のマイコンを使用するのであれば、マニュアル等を参照して、アンテナ出力に設定するPINに合わせて、使用するGPIOとそれ対応するPWM チャンネルに書き換えて下さい。  
+
+#### 出力周波数の設定
+
+1. 変更場所  
+func main()の先頭部分の搬送波の周波数を設定している tx.SetFrequency() メソッドを探して下さい。  
+
+```go
+// 搬送波として使用する周波数の設定
+	tx.SetFrequency(999000)
+```
+
+この定義の前に定義されている周波数を選んで、書き換えて下さい。
+設定する単位は、Hzです。
+999KHzに設定する場合は、999000と書き込んで下さい。
+なお、AM帯とFM帯で設定方法が少し異なるので、2と3で説明します。
+
+2. FM帯の設定
+
+最初に、pwmでFM放送の周波数帯の電波を、生成しようとしましたが、pwmで出力できる周波数が低く、直接、出力することはできませんでした。  
+そこで、出力する周波数の整数倍の高次に発生する高調波（こうちょうは）がFM帯に入る周波数を探しました。  
+以下は、FM帯の設定例で、83.40 MHz, 93.80 MHz, 104.10 MHzの3つの周波数で電波が出力されます。  
+FM帯の高い周波数では、PWMの設定値の制約から断続時間が長くなり、ノイズが混じるので、10MHz以下の設定を推奨します。
+
+
+<!-- ![FM帯の高調波](images/FM_10_0MHz.csv.png "FM帯の高調波") --> 
+
+以下の設定の中で、もっとの出力が高かったのは、FM010_00MHzの設定で、93.80MHzで受信した時でした。  
+
+**FM波設定表**  
+
+| FM波の定義   | 設定値   | 出力周波数(MHz) | 高調波 1 | 高調波 2 | 高調波 3 | 高調波 4 | 高調波 5 | 高調波 6 | 高調波 7 | 高調波 8 | 高調波 9 | 
+| ------------ | -------- | --------------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | 
+| FREQ_2MHz    | 2000000  | 2.00MHz         | 76       | 78       | 80       | 82       | 84.5     | 86       | 90.1     | 92       | 94       | 
+| FREQ_4MHz    | 4000000  | 4.00MHz         | 76       | 78.5     | 84       | 85.5     | 88       | 92       |          |          |          | 
+| FREQ_5_20MHz | 5208333  | 5.20MHz         | 84.1     | 91.4     |          |          |          |          |          |          |          | 
+| FREQ_8MHz    | 8000000  | 8.00MHz         | 88       | 91.3     |          |          |          |          |          |          |          | 
+| FREQ_10MHz   | 10000000 | 10.00MHz        | 80       | 86.5     | 90       |          |          |          |          |          |          | 
+| FREQ_16MHz   | 16000000 | 16.00MHz        | 89.9     | 90.1     |          |          |          |          |          |          |          | 
+| FREQ_20MHz   | 20000000 | 20.00MHz        | 80       | 83.9     | 86.5     | 87.9     | 93.5     |          |          |          |          | 
+| FREQ_25MHz   | 25000000 | 25.00MHz        | 76       | 83.5     | 89.9     |          |          |          |          |          |          | 
+
+3. AM帯の設定
+
+AM放送の周波数帯では、それぞれの放送局に割り当てられる周波数は、9kHz間隔で割り振られています。    
+最近の市販ラジオは、電波の周波数を選局、電波から音声を取り出す検波、復調といった一連の受信処理を全てデジタルで行うDSPラジオが主流です。  
+正確な周波数で送信しないとDSPラジオは受信してくれません。  
+
+そこで、この条件に適合する周波数を生成できるPWMの設定を調べたところ、誤差が少なかったのは以下の表に示す周波数でした。  
+必要に応じて、これらの周波数の中から適切なものを選び、period に設定してから、コンパイルして下さい。  
+なお、同調回路がコイルとバリコンで構成された昔ながらのアナログラジオであれば、周波数の設定に気を使う必要はありません。  
+
+**AM波設定表**  
+
+| AM波の定義 | 設定値  | 
+| ---------- | ------- | 
+| AM0612KHz  | 612000  | 
+| AM0684KHz  | 684000  | 
+| AM0693KHz  | 693000  | 
+| AM0738KHz  | 738000  | 
+| AM0774KHz  | 774000  | 
+| AM0819KHz  | 819000  | 
+| AM0999KHz  | 999000  | 
+| AM1224KHz  | 1224000 | 
+| AM1269KHz  | 1269000 | 
+| AM1287KHz  | 1287000 | 
+| AM1368KHz  | 1368000 | 
+| AM1548KHz  | 1548000 | 
+
+### コンパイル  
+
+今回は、examples/Simpleディレクトリのコードを例として説明します。  
+以下のコマンドで、プログラムをコンパイルして下さい。
+
+```bash
+        > tinygo build -target=pico -size=short -o Simple.uf2 .
+        code    data     bss |   flash     ram
+        17604     856    5576 |   18460    6432
+```
+
+### 実行  
+
+コンパイルが完了すると、作業しているディレクトリ内にSimple.uf2 というファイルが作られます。これを、Raspberry Pi Pico に書き込んで下さい。  
+ラジオを設定した周波数にチューニングして、アンテナ線の近くに置いて下さい。  
+音楽が聞こえてきたら成功です。  
+
+### 注意事項  
+
+---
+> もし、使用する出力周波数が**地元放送局の周波数と被る**ようであれば、必ず**修正してから使用**して下さい。  
+---
+
+## 新しい楽曲の作り方  
+
+1. 新しいディレクトリを作り、Templatesディレクトリの中身をすべてコピーする。
+この中のTemplates.goのファイル名をディレクトリと同じファイル名にする。
+
+```bash
+        mkdir NewMusic
+        cp Templates/*.* NewMusic/
+        mv NewMusic/Templates.go NewMusic/NewMusic.go
+```
+
+2. NewMusic/main.goを開く。  
+以下の設定を変更し、出力する周波数を設定する。(693,999,1287,1548KHz)
+
+```bash
+        var period uint64 = uint64(1000000000 / 999000)
+```
+
+3. NewMusic/NewMusic.goを開く。  
+
+* Song_BPMの設定  
+
+楽曲に合わせてテンポを書き換える。  
+
+```bash
+        var Song_BPM float64 = 120.0 // 楽曲のテンポ
+```
+
+* Repetitionsの設定  
+
+* 1度だけの演奏は1を設定する。  
+* 繰り返して演奏する場合は、その回数を設定する。  
+* 永久に演奏を繰り返す場合は0を設定する。  
+
+    以下は、5回繰り返して演奏する設定  
+
+```bash
+        // 繰返しの回数,0と定義すると、無限ループになり、永久に演奏を繰り返す。
+        var Repetitions int = 5
+```
+
+4. 楽譜データ  
+
+NewMusic/NewMusic.go 内のNotes配列に、楽譜データを書き込んで下さい。  
+音階、音長の2つを1組として書き込んでいきます。休符は、Rです。  
+音階、音長の定義は、note.goを参照ください。  
+
+```bash
+        // 楽譜データ
+        var Notes = []Note{
+                {C4, L4}, // ド,　4分音符
+                {D4, L4}, // レ,　4分音符
+                {E4, L4}, // ミ,　4分音符
+                {F4, L4}, // ファ,4分音符
+                {G4, L4}, // ソ,　4分音符
+                {A4, L4}, // ラ,　4分音符
+                {B4, L4}, // シ,　4分音符
+                {C5, L2}, // ド,　2分音符
+                {R, L1},  // 全休符
+        }
+```
+
+5. コンパイル  
+
+以下のコマンドでコンパイルして下さい。
+
+```bash
+        tinygo build -o [出力するuf2ファイル名] -target=pico -size short ./[ソースコードが格納されたディレクトリ名]
+```
+## 追記事項
+
+ラジオを持っていない方は、このソフトは使えませんよね。  
+でも、良い方法があります。  
+日頃から、「君のような勘のいいガキは嫌いだよ。」と言われているような方々はお気づきかも知れませんが、下図のように、圧電スピーカー(圧電サウンダー)をGPIO15とGNDに接続すると、音が鳴ります。  
+手元に圧電スピーカーがある方は、ぜひ試して見てください。  
+
+![圧電スピーカーの接続](images/pico-pinout_GP15_buzzer.png "圧電スピーカーの接続")  
+
+## warning
+
+**- 警告 -**
+
+このシステムで、以下のような事をしてはいけません。
+
+* 送信出力を上げる。
+* 大きなアンテナに接続する。
+
+3mの距離における電界強度が、500μV/mを上回ると電波法違反になります。
+あくまでも、「マイコンボードの近くにラジオを置いたら、ノイズが聞こえた。」くらいの範囲で運用して下さい。
+
+## Author
+
+* @triring
+
+## License
+
+### 基本ライセンス  
+
+*transmitter* is under [MIT license](https://en.wikipedia.org/wiki/MIT_License).
+
+### 追加ライセンス
+
+[Poul-Henning Kamp](https://people.freebsd.org/%7Ephk/) 氏が提唱しているBEER-WAREライセンスを踏襲し配布する。  
+
+### "THE BEER-WARE LICENSE" (Revision 42)
+
+<akio@triring.net> wrote this file. As long as you retain this notice you
+can do whatever you want with this stuff. If we meet some day, and you think this stuff is worth it, you can buy me a beer in return.
+Copyright (c) 2024 Akio MIWA @triring  
+
+### "THE BEER-WARE LICENSE" (第42版)
+
+このファイルは、<akio@triring.net> が書きました。あなたがこの条文を載せている限り、あなたはソフトウェアをどのようにでも扱うことができます。
+もし、いつか私達が出会った時、あなたがこのソフトに価値があると感じたなら、見返りとして私にビールを奢ることができます。  
+Copyright (c) 2026 Akio MIWA @triring  
