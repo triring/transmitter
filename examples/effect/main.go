@@ -1,6 +1,8 @@
 // tinygo build -target=pico -size=short -o effect.uf2 .
 // tinygo flash -target=pico -size=short -monitor .
 
+// 効果音等を再生するデモ
+
 package main
 
 import (

@@ -102,34 +102,26 @@ examplesディレクトリにサンプルプログラムがあります。
 ```bash
 $ tree -a -f examples/
 examples
-+--- examples/NeeNaw	// 海外の緊急車両のサイレン音
++--- examples/NeeNaw	// 海外の緊急車両のサイレン音を再生するデモ
 |    +--- examples/NeeNaw/main.go
 |
-+--- examples/Simple	// 中央ラ音  440Hz
-     +--- examples/Simple/main.go
-```
-
-<!--
-$ tree -a -f examples/
-examples
-+--- examples/EffectTest
-|    +--- examples/EffectTest/main.go
-|
-+--- examples/NeeNaw	// 海外の緊急車両のサイレン音
-|    +--- examples/NeeNaw/main.go
-|
-+--- examples/Simple	// 中央ラ音  440Hz
++--- examples/Simple		// 中央ラ音 440Hz を再生するデモ
 |    +--- examples/Simple/main.go
 |
-+--- examples/effect
-|    +--- examples/effect/main.go
++--- examples/songs			// 音楽を再生するデモ
+|   +--- examples/songs/main.go
 |
-+--- examples/jukebox
++--- examples/jukebox		// 複数の楽曲を順次再生していくデモ
 |    +--- examples/jukebox/main.go
 |
-+--- examples/songs
-    +--- examples/songs/main.go
--->
++--- examples/effect		// 効果音等を再生するデモ
+|    +--- examples/effect/main.go
+|
++--- examples/EffectTest	// 効果音等を順次再生していくデモ
+　    +--- examples/EffectTest/main.go
+
+```
+
 ### 書き換えるファイルと変更するパラメータ   
 
 設定を変更するmain.goファイルを開き、GPIOや周波数の設定を変更して下さい。  

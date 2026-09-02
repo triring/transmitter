@@ -2,7 +2,7 @@
 // tinygo flash -target=pico -size=short -monitor .
 
 /*
-	海外の緊急車両のサイレン音
+	海外の緊急車両のサイレン音を再生するデモ
 	"Nee naw" is the sound of an emergency vehicle siren
 */
 package main

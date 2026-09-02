@@ -1,6 +1,8 @@
 // tinygo build -target=pico -size=short -o Simple.uf2 .
 // tinygo flash -target=pico -size=short -monitor .
 
+// 中央ラ音 440Hz を再生するデモ
+
 package main
 
 import (

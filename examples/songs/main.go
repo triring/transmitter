@@ -1,6 +1,8 @@
 // tinygo build -target=pico -size=short -o songs.uf2 .
 // tinygo flash -target=pico -size=short -monitor .
 
+// 音楽を再生するデモ
+
 package main
 
 import (

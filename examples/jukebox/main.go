@@ -1,6 +1,8 @@
 // tinygo build -target=pico -size=short -o jukebox.uf2 .
 // tinygo flash -target=pico -size=short -monitor .
 
+// 複数の楽曲を順次再生していくデモ
+
 package main
 
 import (
