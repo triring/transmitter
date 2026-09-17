@@ -98,6 +98,9 @@ func main() {
 //	song := music.DarthVader()
 //	song := music.Godzilla()
 //	song := music.KnightRider()
+//	song := music.SmokeOnTheWater()
+//	song := music.AnotherOneBitesTheDust()
+//	song := music.PeterGunn()
 
 
 	var i int = 0

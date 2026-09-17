@@ -61,6 +61,10 @@ func initTransmitter(pwm transmitter.PWM, antPin machine.Pin) (transmitter.Trans
 func main() {
 // 楽曲データのリスト
 song_lists := []*music.Song{
+	music.SmokeOnTheWater(),
+	music.AnotherOneBitesTheDust(),
+	music.PeterGunn(),
+
 	music.IevanPolkka(),
 	music.CheCheKoolay(),
 	music.JingleBells(),
