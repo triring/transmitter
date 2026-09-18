@@ -108,13 +108,13 @@ examples
 +--- examples/Simple		// 中央ラ音 440Hz を再生するデモ
 |    +--- examples/Simple/main.go
 |
-+--- examples/songs			// 音楽を再生するデモ
++--- examples/songs			// 音楽を再生するデモ musicディレクトリ内に複数の楽曲があります。好きな楽曲を選んで再生して下さい。
 |   +--- examples/songs/main.go
 |
 +--- examples/jukebox		// 複数の楽曲を順次再生していくデモ
 |    +--- examples/jukebox/main.go
 |
-+--- examples/effect		// 効果音等を再生するデモ
++--- examples/effect		// 効果音等を再生するデモ effectディレクトリ内に複数のサンプルがあります。好きなサンプルを選んで再生して下さい。
 |    +--- examples/effect/main.go
 |
 +--- examples/EffectTest	// 効果音等を順次再生していくデモ
